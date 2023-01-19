@@ -19,3 +19,9 @@ padding: 1rem 0;
 .rating span{
     margin: 0.1rem;
 }
+
+.title-link{
+    height: 50px;
+    display: flex;
+    align-items: left;
+}
