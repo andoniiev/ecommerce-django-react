@@ -13,7 +13,7 @@ function Header() {
   const logoutHandler = () => {
     dispatch(logout());
   };
-  
+  userInfo.isAdmin = true;
   return (
     <header>
       <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
