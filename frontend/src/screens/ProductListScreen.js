@@ -12,7 +12,12 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { listProducts, deleteProduct } from "../actions/productActions";
+import {
+  listProducts,
+  deleteProduct,
+  createProduct,
+} from "../actions/productActions";
+import { PRODUCT_CREATE_RESET } from "../constants/productConstants";
 
 function ProductListScreen() {
   const { id } = useParams();
@@ -31,24 +36,37 @@ function ProductListScreen() {
     success: successDelete,
   } = productDelete;
 
+  const productCreate = useSelector((state) => state.productCreate);
+  const {
+    loading: loadingCreate,
+    error: errorCreate,
+    success: successCreate,
+    product: createdProduct,
+  } = productCreate;
+
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
   useEffect(() => {
-    if (userInfo && userInfo.isAdmin) {
-      dispatch(listProducts());
-    } else {
-      history("/login");
+    dispatch({ type: PRODUCT_CREATE_RESET });
+    if (!userInfo.isAdmin) {
+      history('/login')
+    } 
+
+    if(successCreate){
+      history(`/admin/product/${createdProduct._id}/edit`)
+    }else{
+      dispatch(listProducts())
     }
-  }, [dispatch, history, userInfo, successDelete]);
+  }, [dispatch, history, userInfo, successDelete,successCreate,createProduct]);
 
   const deleteHandler = (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       dispatch(deleteProduct(id));
     }
   };
-  const createProductHandler = (product) => {
-    //Create product
+  const createProductHandler = () => {
+    dispatch(createProduct())
   };
 
   return (
@@ -65,6 +83,9 @@ function ProductListScreen() {
       </Row>
       {loadingDelete && <Loader />}
       {errorDelete && <Message variant="danger">{errorDelete}</Message>}
+
+      {loadingCreate && <Loader />}
+      {errorCreate && <Message variant="danger">{errorCreate}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (
@@ -94,7 +115,7 @@ function ProductListScreen() {
                 <td>
                   <LinkContainer to={`/admin/product/${product._id}/edit`}>
                     <Button variant="light" className="btn-sm">
-                      <i className="fa-solid fa-pen-to-square fa-2x"></i>
+                      <i className="fa-solid fa-pen-to-square fa-lg"></i>
                     </Button>
                   </LinkContainer>
                   <Button
@@ -102,7 +123,7 @@ function ProductListScreen() {
                     className="btn-sm"
                     onClick={() => deleteHandler(product._id)}
                   >
-                    <i className="fa-solid fa-trash-can fa-2x"></i>
+                    <i className="fa-solid fa-trash-can fa-lg"></i>
                   </Button>
                 </td>
               </tr>

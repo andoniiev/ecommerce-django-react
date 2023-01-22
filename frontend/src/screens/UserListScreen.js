@@ -73,11 +73,11 @@ function UserListScreen() {
                 <td>
                     <LinkContainer to={`/admin/user/${user._id}/edit`}>
                         <Button variant='light' className='btn-sm'>
-                        <i className="fa-solid fa-user-pen fa-2x"></i>
+                        <i className="fa-solid fa-user-pen fa-lg"></i>
                         </Button>
                     </LinkContainer>
                     <Button variant='danger' className='btn-sm' onClick={()=>deleteHandler(user._id)}>
-                    <i className="fa-solid fa-trash-can fa-2x"></i>
+                    <i className="fa-solid fa-trash-can fa-lg"></i>
                     </Button>
                 </td>
               </tr>
