@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 
 from base.models import Product, Order, OrderItem, ShippingAddress
-from base.serializers import ProductSerializer,OrderSerializer
+from base.serializers import ProductSerializer, OrderSerializer
 
 
 from rest_framework import status
@@ -71,27 +71,35 @@ def addOrderItems(request):
 @permission_classes([IsAuthenticated])
 def getMyOrders(request):
     user = request.user
-    orders=user.order_set.all()
-    serializer = OrderSerializer(orders,many=True)
+    orders = user.order_set.all()
+    serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def getOrders(request):
+    orders = Order.objects.all()
+    serializer = OrderSerializer(orders, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def getOrderById(request,pk):
+def getOrderById(request, pk):
     try:
         user = request.user
-        
+
         order = Order.objects.get(_id=pk)
         print(order)
         if user.is_staff or order.user == user:
             serializer = OrderSerializer(order, many=False)
             return Response(serializer.data)
         else:
-            Response({'detail':'Not authorised to view this order'}, status=status.HTTP_400_BAD_REQUEST)
+            Response({'detail': 'Not authorised to view this order'},
+                     status=status.HTTP_400_BAD_REQUEST)
     except:
-        return Response({'detail':'Order does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'detail': 'Order does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['PUT'])
